@@ -1,0 +1,29 @@
+services:
+  db:
+    image: mariadb:11
+    container_name: wp-db
+    environment:
+      MARIADB_ROOT_PASSWORD: ${MARIADB_ROOT_PASSWORD}
+      MARIADB_DATABASE: ${MARIADB_DATABASE}
+      MARIADB_USER: ${MARIADB_USER}
+      MARIADB_PASSWORD: ${MARIADB_PASSWORD}
+    volumes:
+      - db_data:/var/lib/mysql
+    restart: unless-stopped
+
+  wordpress:
+    image: wordpress:latest
+    container_name: wp-site
+    depends_on:
+      - db
+    ports:
+      - "8081:80"
+    environment:
+      WORDPRESS_DB_HOST: db
+      WORDPRESS_DB_USER: ${MARIADB_USER}
+      WORDPRESS_DB_PASSWORD: ${MARIADB_PASSWORD}
+      WORDPRESS_DB_NAME: ${MARIADB_DATABASE}
+    restart: unless-stopped
+
+volumes:
+  db_data:
