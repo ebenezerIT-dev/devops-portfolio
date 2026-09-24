@@ -1,0 +1,46 @@
+- name: Instalar Docker en Ubuntu
+  hosts: local
+  become: true
+  tasks:
+    - name: Instalar dependencias previas
+      apt:
+        name:
+          - ca-certificates
+          - curl
+        state: present
+        update_cache: true
+
+    - name: Crear el directorio de claves
+      file:
+        path: /etc/apt/keyrings
+        state: directory
+        mode: '0755'
+
+    - name: Descargar la clave GPG de Docker
+      get_url:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        dest: /etc/apt/keyrings/docker.asc
+        mode: '0644'
+
+    - name: Anadir el repositorio de Docker
+      apt_repository:
+        repo: "deb [arch=amd64 signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu {{ ansible_facts['distribution_release'] }} stable"
+        filename: docker
+        state: present
+
+    - name: Instalar Docker
+      apt:
+        name:
+          - docker-ce
+          - docker-ce-cli
+          - containerd.io
+          - docker-buildx-plugin
+          - docker-compose-plugin
+        state: present
+        update_cache: true
+
+    - name: Asegurar que Docker esta arrancado y habilitado
+      service:
+        name: docker
+        state: started
+        enabled: true
