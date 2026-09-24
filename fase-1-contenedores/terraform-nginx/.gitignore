@@ -1,0 +1,4 @@
+# Terraform: NO subir el estado ni los binarios de proveedores
+.terraform/
+*.tfstate
+*.tfstate.*
